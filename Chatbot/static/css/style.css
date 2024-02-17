@@ -1,0 +1,261 @@
+ /* Custom styles */
+ body {
+     background-color: #075e54; /* Funky WhatsApp-like background color for the main page */
+        color: #ffffff; /* Set text color to contrast with the background */
+}
+
+
+.chat-container {
+    max-width: 800px;
+    margin: auto;
+    overflow: hidden;
+    margin-top: 20px;
+    position: relative;
+}
+#carouselExample{
+    width: 100%;
+}
+.carousel-card {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    display: inline-block; /* Ensure display type is block or inline-block */
+}
+
+
+
+.carousel-card img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.village-info {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #030303;
+}
+
+
+
+.contact-form {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #030303;
+}
+
+/* Chat icon styles */
+.chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+/* Call logo styles */
+.call-logo {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #2196F3;
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+/* Chat modal styles */
+#chatModal {
+    max-width: 400px;
+    padding: 15px;
+    height: 600px; /* Adjust the height as needed */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+.chat-interface {
+    background-color: #e5ddd5; /* WhatsApp-like background color */
+    padding: 15px;
+    height: 950px;
+   
+     /* Adjust the height as needed */
+    
+}
+
+.chat-messages {
+    max-height: 300px; /* Set a maximum height for the chat messages container */
+    overflow-y: auto;
+}
+
+.message {
+    max-width: 70%; /* Limit message width for better readability */
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.sent {
+    background-color: #dcf8c6; /* Sent message background color */
+    align-self: flex-end;
+    color: black;
+    margin-left: auto;
+}
+
+.received {
+    background-color: #ffffff; /* Received message background color */
+    align-self: flex-start;
+    color: black;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 5px;
+    display: block;
+}
+
+.chat-input {
+    display: flex;
+    margin-top: 15px;
+}
+
+.chat-input textarea {
+    flex: 1;
+    resize: none;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    width: 80px;
+    
+}
+.chat-input button {
+    background-color: #25D366;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+    /* ... (previous CSS styles remain unchanged) */
+
+    /* Footer styles */
+    .footer {
+        background-color: #075e54; /* Footer background color similar to WhatsApp */
+        color: #ffffff;
+        padding: 10px;
+    }
+    .faq-section {
+        margin-top: 40px;
+    }
+
+    .accordion-button {
+        background-color: #007bff; /* Bootstrap primary color for button */
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .accordion-button:hover {
+        background-color: #0056b3; /* Darker shade on hover */
+    }
+
+    .accordion-item {
+        border: 1px solid #dee2e6; /* Bootstrap's default border color */
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .accordion-item:last-child {
+        margin-bottom: 0; /* Remove margin-bottom for the last FAQ item */
+    }
+
+    .accordion-body {
+        padding: 15px;
+    }
+
+
+    /* ... (previous CSS styles remain unchanged) */
+
+    /* Call Modal styles */
+    #callModal {
+        background-color: #075e54; /* Funky WhatsApp-like background color */
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #128C7E; /* WhatsApp-like border color */
+        background-color: #075e54; /* WhatsApp-like header background color */
+    }
+
+    .modal-title {
+        color: #ffffff; /* WhatsApp-like title color */
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .contact-list {
+        margin-top: 20px;
+    }
+
+    .contact {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #128C7E; /* Separator between contacts */
+    }
+
+    .contact-name {
+        font-weight: bold;
+        color: #030303; /* WhatsApp-like contact name color */
+    }
+
+    .btn-primary {
+        background-color: #25d366; /* WhatsApp-like call button color */
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #128C7E; /* Darker shade on hover */
+    }
+   
+    /* Navbar styles */
+    .container-fluid {
+        background-color: #075e54; /* Set the background color to match the main page */
+    }
+
+    .navbar-brand,
+    .navbar-nav .nav-link {
+        color: #ffffff; /* Set text color to contrast with the navbar background */
+    }
+
+    .navbar-brand:hover,
+    .navbar-nav .nav-link:hover {
+        color: #ffffff; /* Set text color on hover */
+    }
