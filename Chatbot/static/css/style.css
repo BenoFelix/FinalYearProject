@@ -87,7 +87,7 @@
 
 /* Chat modal styles */
 #chatModal {
-    max-width: 400px;
+    max-width: 100%;
     padding: 15px;
     height: 600px; /* Adjust the height as needed */
     position: absolute;
