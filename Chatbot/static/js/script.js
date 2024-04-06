@@ -50,9 +50,7 @@ async function sendMessage() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Example usage:
-    displayMessage('sent', 'Hello, how can I assist you today?', getCurrentTime());
-    displayMessage('received', 'I have a question about your services.', getCurrentTime());
+    displayMessage('received', 'Hello, how can I assist you today?', getCurrentTime());
 });
 
 function displayMessage(sender, message, timestamp) {
