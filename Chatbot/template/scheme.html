@@ -6,13 +6,14 @@
   <title>Add Scheme</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="chatbot.png">
   <style>
     body {
-      background-color:#075e54;
+      background-color: hsl(173, 86%, 20%);
     }
 
     .container {
-      max-width: 400px;
+      max-width: 600px;
       margin: auto;
       margin-top: 100px;
       background-color: #ffffff;
@@ -21,6 +22,29 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
+    .input-group {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: red;
+    }
+
+    /* Center the submit button */
+    .submit-btn-container {
+      text-align: center;
+    }
+
+    /* Add More Button next to Submit Button */
+    #addMoreBtn {
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -29,26 +53,78 @@
   <h2 class="mb-4 text-center">Add Scheme</h2>
 
   <!-- Scheme Form -->
-  <form>
+  <form action="{{url_for('scheme')}}" method="post">
     <div class="mb-3">
       <label for="schemeName" class="form-label">Name of the Scheme</label>
-      <input type="text" class="form-control" id="schemeName" required>
+      <input type="text" class="form-control" id="schemeName" name="name" required>
     </div>
     <div class="mb-3">
-      <label for="eligibilityCriteria" class="form-label">Eligibility Criteria</label>
-      <textarea class="form-control" id="eligibilityCriteria" rows="3" required></textarea>
-    </div>
+        <label for="otherName" class="form-label">OtherName of the Scheme</label>
+        <input type="text" class="form-control" id="otherName" name="other">
+      </div>
+  
     <div class="mb-3">
       <label for="schemeDescription" class="form-label">Description of the Scheme</label>
-      <textarea class="form-control" id="schemeDescription" rows="5" required></textarea>
-    </div> <div class="d-flex justify-content-center align-items-center">
-      <button type="submit" class="btn btn-primary">Submit</button>
-  </div>
-  
+      <textarea class="form-control" id="schemeDescription" name="description" rows="5" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="LINK" class="form-label">Link</label>
+        <input type="text" class="form-control" id="LINK" name="link">
+      </div>
+      <div class="mb-3">
+        <label for="contact" class="form-label">Contact</label>
+        <input type="text" class="form-control" id="contact" name="contact">
+      </div>
+    <!-- Additional Textboxes Container -->
+    <div id="additionalTextBoxesContainer"></div>
+    <!-- Add More and Submit Buttons -->
+    <div class="submit-btn-container">
+      <button type="button" class="btn btn-secondary" onclick="addTextBox()">Add More</button>
+      <button type="submit" class="btn btn-primary" id="addMoreBtn">Submit</button>
+    </div>
   </form>
 </div>
 
 <!-- Bootstrap JS and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Additional JavaScript for adding and removing textboxes -->
+<script>
+  function addTextBox() {
+    var additionalTextBoxesContainer = document.getElementById('additionalTextBoxesContainer');
+    var newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group';
+
+    var textBox1 = document.createElement('input');
+    textBox1.type = 'text';
+    textBox1.name = 'textbox1[]';
+    textBox1.className = 'form-control';
+    textBox1.placeholder = 'Text Box 1';
+
+    var textBox2 = document.createElement('input');
+    textBox2.type = 'text';
+    textBox2.name = 'textbox2[]';
+    textBox2.className = 'form-control';
+    textBox2.placeholder = 'Text Box 2';
+
+    var removeButton = document.createElement('span');
+    removeButton.className = 'remove-btn';
+    removeButton.textContent = 'Remove';
+    removeButton.onclick = function() {
+      removeTextBox(this);
+    };
+
+    newInputGroup.appendChild(textBox1);
+    newInputGroup.appendChild(textBox2);
+    newInputGroup.appendChild(removeButton);
+
+    additionalTextBoxesContainer.appendChild(newInputGroup);
+  }
+
+  function removeTextBox(element) {
+    var parentDiv = element.parentNode;
+    parentDiv.parentNode.removeChild(parentDiv);
+  }
+</script>
 </body>
 </html>

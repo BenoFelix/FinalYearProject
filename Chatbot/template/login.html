@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+  <link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+rel="stylesheet"
+/>
+<!-- MDB -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css"
+rel="stylesheet"
+/>
+<link rel="icon" href="chatbot.png">
+  
+  <style>
+
+    body {
+      background:#128C7E;
+      background-image: url("background.png");
+      font-family: 'Open Sans', sans-serif;
+    }
+    
+    .account-form {
+      background:white; 
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 0 10px #aaa;
+    }
+
+    .account-form h4 {
+      color: #128C7E;
+    }
+    
+    .social-login a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      width: 40px;
+      color: #f4f5f5;  
+      border-radius: 50%;
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    
+    .social-login a:hover {
+      opacity: 1; 
+      transform: scale(1.1);
+    }
+    
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">  
+
+        <div class="text-center mt-5">
+          <img src="chatbot.png" width="50">
+        </div>
+
+        <div class="account-form mt-4">
+           <div class="d-flex justify-content-center align-items-center"> 
+          <h4>Create an Account</h4></div>
+            
+          <form>
+        
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Full Name">
+            </div>
+            
+            <div class="form-group">
+              <input type="email" class="form-control" placeholder="Email Address">
+            </div>
+  
+            <div class="form-group">
+              <input type="password" class="form-control" placeholder="Create Password">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Confirm Password">
+              </div>
+              <div class="form-group"><div class="d-flex justify-content-center align-items-center"> <button type="button" class="btn btn-primary btn-lg"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign up</button></div></div>
+                <hr>
+            
+          </form>   
+         <div class="d-flex justify-content-center align-items-center">
+          <p class="lead fw-normal" style="color: #128C7E;">Sign in with</p></div>
+          <button type="button" class="btn btn-primary btn-floating mx-5">
+            <i class="fab fa-facebook-f"></i>
+          </button>
+
+          <button type="button" class="btn btn-primary btn-floating mx-2">
+            <i class="fab fa-twitter"></i>
+          </button>
+
+          <button type="button" class="btn btn-primary btn-floating mx-5">
+            <i class="fab fa-linkedin-in"></i>
+          </button>
+        </div>
+        
+
+          <div class="d-block text-center mt-3" style="color:black;">
+            Already have an account? <a href="signin.html" style="color:blue">Sign In</a>  
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
