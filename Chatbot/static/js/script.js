@@ -2,8 +2,6 @@ function getVillageInfo() {
     var villageInput = document.getElementById("villageInput").value;
     if (villageInput.trim() === "") return;
 
-    // Add logic to retrieve contact information based on the village name
-    // For simplicity, let's display a console log message.
     console.log("Retrieve contact information for village: " + villageInput);
 }
 
@@ -75,6 +73,3 @@ function handleKeyDown(event) {
         sendMessage(); // Call your sendMessage function when Enter key is pressed
     }
 }
-
-// Your client-side JavaScript code here
-
