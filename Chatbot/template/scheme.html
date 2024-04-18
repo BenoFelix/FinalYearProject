@@ -48,7 +48,12 @@
   </style>
 </head>
 <body>
-
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" onclick="closeAlert(this)">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
 <div class="container">
   <h2 class="mb-4 text-center">Add Scheme</h2>
 

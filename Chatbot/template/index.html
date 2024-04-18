@@ -39,17 +39,38 @@
                     <a class="nav-link" href="#a">About us</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact Us</a>
+                </li>
+                {% if not current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('login')}}">Login</a>
+                </li>
+                {% endif %}
+
+          {% if current_user.is_authenticated %}
+                <li class="nav-item">
                     <a class="nav-link" href="{{url_for('scheme')}}">Add scheme</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact Us</a>
+                    <a class="nav-link" href="{{url_for('signup')}}">Register</a>
                 </li>
-               
-                <!-- Add more navbar options as needed -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                </li>
+                {% endif %}
+
+
             </ul>
         </div>
     </div>
 </nav>
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" onclick="closeAlert(this)">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
 <div id="carouselExample" class="carousel slide container-fluid" data-bs-ride="carousel">
     <div class="carousel-inner">
         <!-- First carousel card -->
