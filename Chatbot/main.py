@@ -53,38 +53,60 @@ def get_keywords(user_response, scheme_data):
     return user_keywords + scheme_names
 
 
+# Define a global variable to store the selected scheme temporarily
+selected_scheme = None
+
+
 def generate_chatbot_response(user_message):
+    global selected_scheme
+
     robo1_response = ''
     matched_schemes = []
-    scheme_names_set = set()  # Store unique scheme names
     scheme_data = [scheme for scheme in collection.find()]
 
     greeting = greet(user_message)
     if greeting:
         return greeting
 
+    if selected_scheme:
+        # If a scheme is selected, provide its details and clear the memory
+        scheme_index = int(user_message.strip()) - 1
+        if 0 <= scheme_index < len(selected_scheme):
+            scheme = selected_scheme[scheme_index]
+            scheme_name = scheme.get("scheme_name", "").capitalize()
+            robo1_response += f'\nHere are the details for the selected scheme - {scheme_name}:\n'
+            for key, value in scheme.items():
+                if key != "_id" and key != "keywords":
+                    if isinstance(value, str):
+                        robo1_response += f"{key.capitalize()}: {value}\n"
+                    elif isinstance(value, dict):
+                        robo1_response += f"{key.capitalize()}: \n"
+                        for k, v in value.items():
+                            robo1_response += f"    {k.capitalize()}: {v}\n"
+            selected_scheme = None  # Clear the memory
+        else:
+            robo1_response = "Invalid scheme number. Please try again."
+        return robo1_response
+
     for scheme in scheme_data:
         if scheme["scheme_name"].lower() in user_message:
-            matched_schemes.append(scheme)
+            if scheme not in matched_schemes:
+                matched_schemes.append(scheme)
 
     if not matched_schemes:
         for scheme in scheme_data:
             scheme_keywords = scheme.get("keywords", [])
             for keyword in scheme_keywords:
                 if keyword.lower() in user_message.lower():
-                    matched_schemes.append(scheme)
+                    if scheme not in matched_schemes:
+                        matched_schemes.append(scheme)
 
     if matched_schemes:
-        for scheme in matched_schemes:
-            scheme_name = scheme["scheme_name"].capitalize()
-            if scheme_name not in scheme_names_set:  # Check if scheme name is not already listed
-                scheme_names_set.add(scheme_name)
-                robo1_response += f'{len(scheme_names_set)}. {scheme_name}\n'
-
-        if len(scheme_names_set) == 1:
+        if len(matched_schemes) == 1:
             # If only one scheme is matched, display its details
             scheme = matched_schemes[0]
-            robo1_response += f'\nHere are the details for the matched scheme - {scheme["scheme_name"].capitalize()}:\n'
+            scheme_name = scheme.get("scheme_name", "").capitalize()
+            robo1_response += f'\nHere are the details for the matched scheme - {scheme_name}:\n'
             for key, value in scheme.items():
                 if key != "_id" and key != "keywords":
                     if isinstance(value, str):
@@ -94,21 +116,26 @@ def generate_chatbot_response(user_message):
                         for k, v in value.items():
                             robo1_response += f"    {k.capitalize()}: {v}\n"
         else:
+            for i, scheme in enumerate(matched_schemes, 1):
+                robo1_response += f"{i}. {scheme['scheme_name'].capitalize()}\n"
+
             # If multiple schemes are matched, prompt the user to select one
             robo1_response += "\nMultiple schemes matched. Please type the number of the scheme you want to know more about:\n"
-
+            # Store the matched schemes temporarily for selection
+            selected_scheme = matched_schemes
     else:
         robo1_response = "Scheme details not found in the database."
 
     return robo1_response
 
 
-def generate_keywords(main_list):
-    keywords = set()
-    n = len(main_list)
-    for i in range(n):
-        for j in range(i + 1, n + 1):
-            keywords.add(''.join(main_list[i:j]))
+def generate_keywords(text):
+    words = text.lower().split()
+    keywords = set(words)
+    for i in range(len(words)):
+        for j in range(i + 1, len(words)):
+            keywords.add("".join(words[i:j]))
+            keywords.add(" ".join(words[i:j]))
     return list(keywords)
 
 
@@ -155,7 +182,7 @@ def scheme():
             return redirect(url_for('scheme'))
 
         # Generate keywords
-        keywords = generate_keywords(scheme.split()) + generate_keywords(other.split())
+        keywords = generate_keywords(scheme) + generate_keywords(other)
 
         # Create data dictionary
         data1 = {
@@ -164,7 +191,7 @@ def scheme():
             "description": description,
             "Link": link,
             "Contact": contact,
-            "Keywords": keywords
+            "keywords": keywords
         }
 
         # Add non-empty values from textbox fields to data1
