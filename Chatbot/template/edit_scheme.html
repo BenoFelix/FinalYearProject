@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Scheme</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark " id="chat">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">AI Chatbot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+
+          {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1 align="center">Edit Scheme</h1><br><hr><br>
+<form id="updateForm" action="{{ url_for('update_scheme', scheme_id=scheme._id) }}" method="POST">
+    {% for key, value in scheme.items() %}
+        {% if key != "_id" %}
+            <div class="input-group">
+                <!-- Input field for key -->
+                <input type="text" name="key[]" value="{{ key }}" class="form-control">
+                <!-- Textarea for value -->
+                <textarea name="value[]" rows="4" cols="50" class="form-control">{{ value }}</textarea>
+                {% if loop.index > 1 %}
+                    <!-- Display remove button for existing key-value pairs -->
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger" onclick="removeTextBox(this.parentElement.parentElement)">Remove</button>
+                    </div>
+                {% endif %}
+            </div>
+            <br><br>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Container for additional textboxes -->
+    <div id="additionalTextBoxesContainer"></div>
+
+    <!-- Button to add new textboxes -->
+    <button type="button" onclick="addTextBox()" class="btn btn-secondary">Add Text Box</button>
+
+    <button type="button" onclick="onSubmitForm()" class="btn btn-primary">Submit</button>
+</form>
+<script>
+    function addTextBox() {
+        var additionalTextBoxesContainer = document.getElementById('additionalTextBoxesContainer');
+        var newInputGroup = document.createElement('div');
+        newInputGroup.className = 'input-group';
+
+        var textBox1 = document.createElement('input');
+        textBox1.type = 'text';
+        textBox1.name = 'key[]';  // Ensure the name is set to 'key[]'
+        textBox1.className = 'form-control';
+        textBox1.placeholder = 'Enter Key';
+
+        var textBox2 = document.createElement('textarea');
+        textBox2.name = 'value[]';  // Ensure the name is set to 'value[]'
+        textBox2.rows = '4';
+        textBox2.cols = '50';
+        textBox2.className = 'form-control';
+        textBox2.placeholder = 'Enter Value';
+
+        var removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-danger';
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = function() {
+            removeTextBox(newInputGroup);
+        };
+
+        var removeButtonWrapper = document.createElement('div');
+        removeButtonWrapper.className = 'input-group-append';
+        removeButtonWrapper.appendChild(removeButton);
+
+        newInputGroup.appendChild(textBox1);
+        newInputGroup.appendChild(textBox2);
+        newInputGroup.appendChild(removeButtonWrapper);
+
+        additionalTextBoxesContainer.appendChild(newInputGroup);
+    }
+
+    function removeTextBox(element) {
+    // Remove the HTML element
+    element.remove();
+
+    // Remove the corresponding key-value pair from 'keys' and 'values' arrays
+    var keys = document.getElementsByName('key[]');
+    var values = document.getElementsByName('value[]');
+
+    // Find the index of the removed element
+    var index = Array.from(document.querySelectorAll('.input-group')).indexOf(element);
+
+    // Check if the index is valid
+    if (index >= 0 && index < keys.length && index < values.length) {
+        keys[index].remove();
+        values[index].remove();
+    }
+}
+
+
+</script>
+<script>
+    function removeEmptyPairs() {
+        var keys = document.getElementsByName('key[]');
+        var values = document.getElementsByName('value[]');
+
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i].value.trim();
+            var value = values[i].value.trim();
+
+            // Check if both key and value are empty
+            if (key === '' || value === '') {
+                // Remove the empty pair from the DOM
+                keys[i].parentNode.parentNode.remove();
+            }
+        }
+    }
+
+    function onSubmitForm() {
+    // Remove empty pairs before submitting the form
+    removeEmptyPairs();
+
+    // Log form data for debugging
+    var formData = new FormData(document.getElementById('updateForm'));
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    // Submit the form
+    document.getElementById('updateForm').submit();
+}
+
+</script>
+</div>
+<footer class="footer text-center mt-4">
+    <p style="color:ghostwhite">&copy; 2024 FABB Technologies pvt limted. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

@@ -6,7 +6,8 @@
   <title>Add Scheme</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" href="chatbot.png">
+  <link rel="icon" href="./static/image/chatbot.png">
+  <script src="./static/js/script.js"></script>
   <style>
     body {
       background-color: hsl(173, 86%, 20%);
@@ -48,6 +49,28 @@
   </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark " id="chat">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">AI Chatbot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+
+          {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert" onclick="closeAlert(this)">
         {{ message }}
@@ -89,47 +112,11 @@
     </div>
   </form>
 </div>
+<footer class="footer text-center mt-4">
+    <p style="color:ghostwhite">&copy; 2024 FABB Technologies pvt limted. All rights reserved.</p>
+</footer>
 
-<!-- Bootstrap JS and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Additional JavaScript for adding and removing textboxes -->
-<script>
-  function addTextBox() {
-    var additionalTextBoxesContainer = document.getElementById('additionalTextBoxesContainer');
-    var newInputGroup = document.createElement('div');
-    newInputGroup.className = 'input-group';
-
-    var textBox1 = document.createElement('input');
-    textBox1.type = 'text';
-    textBox1.name = 'textbox1[]';
-    textBox1.className = 'form-control';
-    textBox1.placeholder = 'Text Box 1';
-
-    var textBox2 = document.createElement('input');
-    textBox2.type = 'text';
-    textBox2.name = 'textbox2[]';
-    textBox2.className = 'form-control';
-    textBox2.placeholder = 'Text Box 2';
-
-    var removeButton = document.createElement('span');
-    removeButton.className = 'remove-btn';
-    removeButton.textContent = 'Remove';
-    removeButton.onclick = function() {
-      removeTextBox(this);
-    };
-
-    newInputGroup.appendChild(textBox1);
-    newInputGroup.appendChild(textBox2);
-    newInputGroup.appendChild(removeButton);
-
-    additionalTextBoxesContainer.appendChild(newInputGroup);
-  }
-
-  function removeTextBox(element) {
-    var parentDiv = element.parentNode;
-    parentDiv.parentNode.removeChild(parentDiv);
-  }
-</script>
 </body>
 </html>

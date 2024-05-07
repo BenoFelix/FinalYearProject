@@ -42,6 +42,28 @@ rel="stylesheet"
   </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark " id="chat">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">AI Chatbot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+
+          {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert" onclick="closeAlert(this)">
         {{ message }}
@@ -77,7 +99,10 @@ rel="stylesheet"
 
   
 </div>
-
+<br>
+<footer class="footer text-center mt-4">
+    <p style="color:ghostwhite">&copy; 2024 FABB Technologies pvt limted. All rights reserved.</p>
+</footer>
 <!-- Bootstrap JS and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
