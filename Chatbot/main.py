@@ -56,6 +56,7 @@ def get_keywords(user_response, scheme_data):
 def generate_chatbot_response(user_message):
     robo1_response = ''
     matched_schemes = []
+    scheme_names_set = set()  # Store unique scheme names
     scheme_data = [scheme for scheme in collection.find()]
 
     greeting = greet(user_message)
@@ -73,21 +74,28 @@ def generate_chatbot_response(user_message):
                 if keyword.lower() in user_message.lower():
                     matched_schemes.append(scheme)
 
-    if len(matched_schemes) == 1:
-        scheme = matched_schemes[0]
-        robo1_response = f'Here are the details for the matched scheme - {scheme["scheme_name"].capitalize()}:\n'
-        for key, value in scheme.items():
-            if key != "_id" and key != "keywords":
-                if isinstance(value, str):
-                    robo1_response += f"{key.capitalize()}: {value}\n"
-                elif isinstance(value, dict):
-                    robo1_response += f"{key.capitalize()}: \n"
-                    for k, v in value.items():
-                        robo1_response += f"    {k.capitalize()}: {v}\n"
-    elif len(matched_schemes) > 1:
-        robo1_response = "Multiple schemes matched. Please type the number of the scheme you want to know more about:\n"
-        for i, scheme in enumerate(matched_schemes, 1):
-            robo1_response += f"{i}. {scheme['scheme_name'].capitalize()}\n"
+    if matched_schemes:
+        for scheme in matched_schemes:
+            scheme_name = scheme["scheme_name"].capitalize()
+            if scheme_name not in scheme_names_set:  # Check if scheme name is not already listed
+                scheme_names_set.add(scheme_name)
+                robo1_response += f'{len(scheme_names_set)}. {scheme_name}\n'
+
+        if len(scheme_names_set) == 1:
+            # If only one scheme is matched, display its details
+            scheme = matched_schemes[0]
+            robo1_response += f'\nHere are the details for the matched scheme - {scheme["scheme_name"].capitalize()}:\n'
+            for key, value in scheme.items():
+                if key != "_id" and key != "keywords":
+                    if isinstance(value, str):
+                        robo1_response += f"{key.capitalize()}: {value}\n"
+                    elif isinstance(value, dict):
+                        robo1_response += f"{key.capitalize()}: \n"
+                        for k, v in value.items():
+                            robo1_response += f"    {k.capitalize()}: {v}\n"
+        else:
+            # If multiple schemes are matched, prompt the user to select one
+            robo1_response += "\nMultiple schemes matched. Please type the number of the scheme you want to know more about:\n"
 
     else:
         robo1_response = "Scheme details not found in the database."
@@ -325,9 +333,6 @@ def update_scheme(scheme_id):
         flash('Error updating scheme: {}'.format(e), 'error')
 
     return redirect(url_for('list_scheme'))
-
-
-
 
 
 @login_required
