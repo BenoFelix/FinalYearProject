@@ -34,8 +34,8 @@ def hash1(password):
 
 
 def mail(email, content, sub):
-    MY_EMAIL = "testappmail2023@gmail.com"
-    MY_PASSWORD = "pufazlkacbfitzjn"
+    MY_EMAIL = ""
+    MY_PASSWORD = ""
     with smtplib.SMTP("smtp.gmail.com") as connection:
         connection.starttls()
         connection.login(MY_EMAIL, MY_PASSWORD)
