@@ -48,7 +48,7 @@ def mail(email, content, sub):
         )
 
 
-def decrypt(enc, key="Secret key"):
+def decrypt(enc, key="Nothing"):
     dec = []
     enc = base64.urlsafe_b64decode(enc).decode()
     for i, c in enumerate(enc):
@@ -56,3 +56,10 @@ def decrypt(enc, key="Secret key"):
         dec_c = chr((256 + ord(c) - ord(key_c)) % 256)
         dec.append(dec_c)
     return "".join(dec)
+
+
+def final_encrypt(a):
+    salt = 'wqPDlMOPw5PChcOkwoHDn8OZw6I='
+    final_out = hash2(hash1(hash0(encrypt(key="5b40117d08e+646606a733e=1f0c078c6b87",
+                                          clear=encrypt_password(a) + salt))))
+    return final_out
