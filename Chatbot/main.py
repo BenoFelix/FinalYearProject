@@ -1,12 +1,13 @@
 import random
 import string
 import nltk
+import pymongo
 from flask import Flask, request, jsonify, render_template, url_for, redirect, flash
 from pymongo import MongoClient
 from flask_login import UserMixin, login_user, login_required, logout_user, current_user, LoginManager
 from flask_bcrypt import Bcrypt
-from extra_functions import encrypt, encrypt_password, hash0, hash1, hash2, decrypt, mail
-from bson import ObjectId
+from extra_functions import encrypt, decrypt, mail, final_encrypt
+from bson import ObjectId, json_util
 
 nltk.download('punkt')
 app = Flask(__name__, template_folder="template", static_folder="static")
@@ -95,17 +96,15 @@ def generate_chatbot_response(user_message):
 
 
 def generate_keywords(main_list):
-    sub = [main_list[i:j] for i in range(len(main_list)) for j in range(i + 1, len(main_list) + 1)]
-    m = []
-    for i in sub:
-        k = ''
-        for j in i:
-            k += j
-        m.append(k)
-    return m
+    keywords = set()
+    n = len(main_list)
+    for i in range(n):
+        for j in range(i + 1, n + 1):
+            keywords.add(''.join(main_list[i:j]))
+    return list(keywords)
 
 
-def generate_password(length=12):
+def generate_password(length=8):
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(random.choice(characters) for _ in range(length))
     return password
@@ -130,39 +129,55 @@ def chat():
 @login_required
 def scheme():
     if request.method == "POST":
+        # Get form data
         scheme = request.form["name"]
         other = request.form["other"]
-        existing_record = collection.find_one(
-            {"$or": [{"Scheme Name": scheme}, {"Other Name": other}]}
-        )
-        if existing_record:
-            return jsonify({"error": "Scheme name or other name already exists!"}), 400
-
-        # Get values from the form
         description = request.form["description"]
         link = request.form['link']
         contact = request.form['contact']
         textbox1_values = request.form.getlist('textbox1[]')
         textbox2_values = request.form.getlist('textbox2[]')
 
+        # Check if scheme name or other name already exists
+        existing_record = collection.find_one(
+            {"$or": [{"scheme_name": scheme}, {"Other Name": other}]}
+        )
+        if existing_record:
+            flash("Scheme name or other name already exists!", 'error')
+            return redirect(url_for('scheme'))
+
         # Generate keywords
-        keyword = generate_keywords(list(scheme.split())) + generate_keywords(list(other.split()))
+        keywords = generate_keywords(scheme.split()) + generate_keywords(other.split())
 
         # Create data dictionary
-        data1 = {"Scheme Name": scheme, "Other Name": other,
-                 "Description": description,
-                 "link": link, "Contact": contact, "keywords": keyword}
+        data1 = {
+            "scheme_name": scheme,
+            "Other Name": other,
+            "description": description,
+            "Link": link,
+            "Contact": contact,
+            "Keywords": keywords
+        }
 
         # Add non-empty values from textbox fields to data1
-        data = {box1: box2 for box1, box2 in zip(textbox1_values, textbox2_values) if box2.strip() != ""}
-        data1.update(data)
+        additional_data = {box1: box2 for box1, box2 in zip(textbox1_values, textbox2_values) if box2.strip() != ""}
+        data1.update(additional_data)
 
         # Remove empty values from data1
-        data1 = {key: value for key, value in data1.items() if value.strip() != ""}
+        data1 = {key: value if isinstance(value, list) else value.strip() for key, value in data1.items() if
+                 (isinstance(value, str) and value.strip() != "") or (
+                         isinstance(value, list) and any(v.strip() != "" for v in value))}
 
-        collection.insert_one(data1)
+        # Insert data into the database
+        try:
+            collection.insert_one(data1)
+            flash('Scheme added successfully!', 'success')
+        except pymongo.errors.WriteError as e:
+            print(e)
+            flash('Error adding scheme: {}'.format(e), 'error')
 
-        return 'Data submitted successfully!'
+        return redirect(url_for('home'))
+
     return render_template("scheme.html")
 
 
@@ -170,9 +185,7 @@ def scheme():
 def login():
     if request.method == 'POST':
         username = encrypt(request.form['email'])
-        salt = 'wqPDlMOPw5PChcOkwoHDn8OZw6I='
-        password = hash2(hash1(hash0(encrypt(key="5b40117d08e+646606a733e=1f0c078c6b87",
-                                             clear=encrypt_password(request.form['password'] + salt)))))
+        password = final_encrypt(request.form['password'])
         user = db.find_one({"email": username})
         if user:
             if encrypt(password) == user["password"]:
@@ -203,11 +216,8 @@ def signup():
         Name = encrypt(request.form["name"])
         Email = encrypt(request.form["email"])
         user = db.find_one({"email": Email})
-        salt = 'wqPDlMOPw5PChcOkwoHDn8OZw6I='
         psw = generate_password()
-        print(psw)
-        Password = hash2(
-            hash1(hash0(encrypt(key="5b40117d08e+646606a733e=1f0c078c6b87", clear=encrypt_password(psw + salt)))))
+        Password = final_encrypt(psw)
         if user:
             flash("Email already exists!!")
             return redirect(url_for("home"))
@@ -236,6 +246,140 @@ def logout():
     logout_user()
     flash("You Have Been Logged Out!")
     return redirect(url_for('login'))
+
+
+@app.route('/list_scheme', methods=['GET', 'POST'])
+@login_required
+def list_scheme():
+    data = list(collection.find({}, {"_id": 1, "scheme_name": 1}))
+    final_data = [(scheme['_id'], scheme.get('scheme_name', 'Unknown')) for scheme in data]
+    return render_template('schemetble.html', data=final_data)
+
+
+@app.route('/view/<scheme_id>', methods=['GET', 'POST'])
+@login_required
+def view(scheme_id):
+    scheme = collection.find_one({'_id': ObjectId(scheme_id)}, {'keywords': 0})
+    if not scheme:
+        flash('Scheme not found!', 'error')
+        return redirect(url_for('list_scheme'))
+    return render_template('view_scheme.html', scheme=scheme)
+
+
+@app.route('/delete/<scheme_id>', methods=['GET', 'POST'])
+@login_required
+def delete(scheme_id):
+    scheme = collection.find_one({'_id': ObjectId(scheme_id)})
+    if not scheme:
+        flash('Scheme not found!', 'error')
+        return redirect(url_for('list_scheme'))
+    collection.delete_one({'_id': ObjectId(scheme_id)})
+    return redirect(url_for('list_scheme'))
+
+
+@app.route('/edit/scheme_id=<scheme_id>', methods=['GET', 'POST'])
+@login_required
+def edit(scheme_id):
+    scheme = collection.find_one({'_id': ObjectId(scheme_id)})
+    if not scheme:
+        flash('Scheme not found!', 'error')
+        return redirect(url_for('list_scheme'))
+    return render_template('edit_scheme.html', scheme=scheme)
+
+
+@app.route('/update_scheme/<scheme_id>', methods=['POST'])
+@login_required
+def update_scheme(scheme_id):
+    # Get the scheme from the database
+    scheme = collection.find_one({'_id': ObjectId(scheme_id)})
+    if not scheme:
+        flash('Scheme not found!', 'error')
+        return redirect(url_for('list_scheme'))
+
+    # Get form data for the main scheme fields
+    scheme_data = {
+        "scheme_name": request.form.get("scheme_name"),
+        "other name": request.form.get("other_name"),
+        "description": request.form.get("description"),
+        "link": request.form.get("link"),
+        "contact": request.form.get("contact"),
+    }
+    final_scheme = {}
+    # Add additional key-value pairs from the form
+    keys = request.form.getlist('key[]')
+    values = request.form.getlist('value[]')
+    for key, value in zip(keys, values):
+        if key.strip() and value is not None and value != 'None' and value.strip():  # Check if both key and value are not empty
+            scheme_data[key.strip()] = value.strip()
+    for key, value in scheme_data.items():
+        if key.strip() and value is not None and value != 'None' and value.strip():
+            final_scheme[key.strip()] = value.strip()
+
+    # Update the scheme in the database
+    print(final_scheme)
+    try:
+        collection.replace_one({'_id': ObjectId(scheme_id)}, final_scheme)
+        flash('Scheme updated successfully!', 'success')
+    except pymongo.errors.WriteError as e:
+        print(e)
+        flash('Error updating scheme: {}'.format(e), 'error')
+
+    return redirect(url_for('list_scheme'))
+
+
+
+
+
+@login_required
+@app.route('/delete_user/user_id=<user_id>', methods=['GET', 'POST'])
+def delete_user(user_id):
+    user = db.find_one({'_id': ObjectId(user_id)})
+    if not user:
+        flash('User not found!', 'error')
+        return redirect(url_for('dashboard'))
+    db.delete_one({'_id': ObjectId(user_id)})
+    logout_user()
+    flash("Your account was deleted successfully!!")
+    return redirect(url_for('home'))
+
+
+@login_required
+@app.route('/dashboard/user_id=<user_id>', methods=['GET', 'POST'])
+def dashboard(user_id):
+    user = db.find_one({'_id': ObjectId(user_id)})
+    if not scheme:
+        flash('User not found!', 'error')
+        return redirect(url_for('home'))
+    Name = decrypt(user['name'])
+    Email = decrypt(user['email'])
+    return render_template('dashboard.html', name=Name, email=Email, id=user["_id"])
+
+
+@login_required
+@app.route('/change_password/user_id=<user_id>', methods=['GET', 'POST'])
+def change_password(user_id):
+    if request.method == 'POST':
+        user = db.find_one({'_id': ObjectId(user_id)})
+        psw = request.form['old_password']
+        if encrypt(final_encrypt(psw)) == user['password']:
+            new = request.form['new']
+            retype = request.form['retype']
+            if new == retype:
+                password = encrypt(final_encrypt(new))
+                if password == user['password']:
+                    flash('Both New and Old password are same!!')
+                    return redirect(url_for('change_password', user_id=current_user.id))
+                else:
+                    db.update_one({'_id': ObjectId(current_user.id)}, {'$set': {'password': password}})
+                    flash("Password Updated Successfully!!")
+                    return redirect(url_for("home"))
+            else:
+                flash('Both Password not matched!!')
+                return redirect(url_for('change_password', user_id=current_user.id))
+        else:
+            flash("Old Password Wrong!!")
+            return redirect(url_for('change_password', user_id=current_user.id))
+    return render_template("change_password.html")
 
 
 if __name__ == '__main__':
