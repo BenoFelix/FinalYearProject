@@ -1,0 +1,30 @@
+body {
+    background-color: #075e54; /* Funky WhatsApp-like background color for the main page */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: antiquewhite; /* Set text color to antiquewhite */
+}
+
+.whatsapp-table {
+    border-radius: 15px;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.whatsapp-table th,
+.whatsapp-table td {
+    border-bottom: 1px solid #fff;
+    padding: 10px;
+    color: antiquewhite !important; ;
+}
+
+.whatsapp-table th {
+    background-color: #128c7e; /* Darker shade for table header */
+    font-weight: bold;
+}
+
+.whatsapp-table tbody tr:hover {
+    background-color: #0d8e81; /* Darker shade for hover effect */
+}
+
+/* Add any additional custom styling here */
